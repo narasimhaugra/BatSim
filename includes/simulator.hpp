@@ -4,8 +4,8 @@
  *
  * The simulator brings up the load and battery pack
  * together to run the battery and observe the changes
- * @author Dipta Pandit
- * @date 3/12/2014
+ * @author Ugra Narasimha
+ * @date 11/09/2015
  * @see simulator.cpp
  */
 #ifndef  SIMULATOR_CLASS
