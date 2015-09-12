@@ -5,8 +5,8 @@
  * The command parser takes input from user and tokenize it
  * It can compare the input against a valid command and key list
  * and returns the unique function number
- * @author Dipta Pandit
- * @date 3/12/2014
+ * @author ugra narasimha
+ * @date 12 Sep 2015
  * @see cparser.hpp
  */
 #include "../includes/cparser.hpp"
