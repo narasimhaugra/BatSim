@@ -3,8 +3,8 @@
  * @brief Implements the simulator
  *
  * implements the public interface of the simulator
- * @author Dipta Pandit
- * @date 3/12/2014
+ * @author ugra narasimha
+ * @date 12 Sep 2015
  * @see simulator.hpp
  */
 #include "../includes/simulator.hpp"
