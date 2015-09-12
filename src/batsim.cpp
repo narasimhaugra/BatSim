@@ -4,8 +4,8 @@
  * @brief Battery simulator.
  *
  * Implements the command line interface for the simulator.
- * @author Dipta Pandit
- * @date 30 Nov 2014
+ * @author ugra narasimha 
+ * @date 12 Sep 2015
  * @see batsim.hpp
 */
 
