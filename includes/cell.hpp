@@ -8,8 +8,8 @@
  * etc decides the characteristics of the battery.
  * A cell should be added to a battarey for operation.
  *
- * @date Dec 1, 2014
- * @author Dipta Pandit
+ * @date 11/09/2015
+ * @author Ugra Narasimha
  **/
 #ifndef  CELL_CLASS
 #define  CELL_CLASS
