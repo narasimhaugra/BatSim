@@ -1,4 +1,14 @@
 
+/**
+ * @file simulator.c
+ * @brief Battery simulator.
+ *
+ * Implements the command line interface for the simulator.
+ * @author Dipta Pandit
+ * @date 30 Nov 2014
+ * @see batsim.hpp
+*/
+
 #include "../includes/cell.hpp"
 #include "../includes/battery.hpp"
 #include "../includes/simulator.hpp"
@@ -29,6 +39,11 @@ void showHelp(void)
 			\n\t      \tValid keys are: initv, sresistance, and load\
 			\n\tget   \tReturns a parameter. Format: BatSim>> get <key>\
 			\n\t      \tValid keys are: cvoltage, scurrent, vout, iout, load, runtime, sstate, and status\
+			\n\tsetadv\tSets some advanced parameters. Format is same as set\
+			\n\t      \tValid keys are: shift1, shift2, drop1, drop2, cutoff and capacity\
+			\n\t      \tThese keys are advance battery characteristics.\
+			\n\t      \tshift1, shift2: gradient shifting points on the capacity axis, expressed as percentage(%%).\
+			\n\t      \tdrop1, drop2: percentage drop of voltage at shift1 and shift2 respectively(%%).\
 			\n\tsim   \tStarts or stops the simulator. Format: BatSim>> sim start/stop\
 			\n\t      \tSimulator log is generated ./batsim.log\
 			\n\thelp  \tPrints this help text.\
@@ -36,8 +51,13 @@ void showHelp(void)
 	std::cout<<"\nDEFAULT VALUES\n\
 			\n\tInitial voltages  : 12.20 V, 10.90 V, 11.8 V\
 			\n\tSeries resistances: 30 Ohm,  10 Ohm,  20 Ohm\
-			\n\tLoad              : 100 Ohm\
-			\n\tCapacity          : 800 mAH\n";
+			\n\tLoad              : 160 Ohm\
+			\n\tCapacity          : 800 mAH\
+			\n\tshift1            : 10 %%\
+			\n\tshift2            : 90 %%\
+			\n\tdrop1             : 20 %%\
+			\n\tdrop2             : 60 %%\
+			\n\tCutoff voltage    : 07 V\n";
 	return;
 }
 
@@ -63,7 +83,7 @@ int main()
 	BatPack.addCell(&Cell[2]);
 
 	Simulator.connect(&BatPack);
-	Simulator.connect(100);
+	Simulator.connect(160);
 	Simulator.setSpeed(1000);
 	Simulator.setResolution(10);
 
