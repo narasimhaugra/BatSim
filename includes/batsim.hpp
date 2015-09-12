@@ -3,8 +3,8 @@
  * @brief Header for command line interface
  * 
  * Defines the command that the CLI will accept
- * @author Dipta Pandit
- * @date 3/12/2014
+ * @author Ugra Narasimha
+ * @date 11/09/2014
  * @see batsim.cpp
  */
 #ifndef  BATSIM_H
