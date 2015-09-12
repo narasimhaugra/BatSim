@@ -9,8 +9,8 @@
  *
  * @see cell.hpp
  *
- * @date Dec 1, 2014
- * @author Dipta Pandit
+ * @date 11/09/2015
+ * @author Ugra Narasimha
  **/
 #ifndef  BATTERY_CLASS
 #define  BATTERY_CLASS
