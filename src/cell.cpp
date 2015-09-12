@@ -7,8 +7,8 @@
  * Characteristics of a cell like discharge curve, capacity
  * etc decides the characteristics of the battery.
  * A cell should be added to a battarey for operation.
- * @author Dipta Pandit
- * @date 3/12/2014
+ * @author ugra narasimha
+ * @date 12 Sep 2015
  * @see cell.hpp
  */
 #include "../includes/cell.hpp"
