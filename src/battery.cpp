@@ -6,8 +6,8 @@
  * fixed way and the battery behaves acordingly. A battery can be
  * connected to a load and run.
  *
- * @author Dipta Pandit
- * @date 03/12/2014
+ * @author ugra narasimha
+ * @date 12 Sep 2015
  * @see battery.h
  */
 
