@@ -1,378 +1,352 @@
 /**
- * @file battery.cpp
- * @brief Implementation of the Battery class
+ * @file cell.cpp
+ * @brief Implementation of the cell class
  *
- * A battery consists of one or more cells. Cells are connected in
- * fixed way and the battery behaves acordingly. A battery can be
- * connected to a load and run.
- *
+ * Cell is the primary element of a battery.
+ * A battery contains multiple cells connected in parallel.
+ * Characteristics of a cell like discharge curve, capacity
+ * etc decides the characteristics of the battery.
+ * A cell should be added to a battarey for operation.
  * @author Dipta Pandit
- * @date 03/12/2014
- * @see battery.h
+ * @date 3/12/2014
+ * @see cell.hpp
  */
-
-#include "../includes/battery.hpp"
-#include <unistd.h>
-#include <iostream> ///<for writing to the log file
+#include "../includes/cell.hpp"
 
 /**
- * @brief Constructor of a Battery pack object
+ * @brief Constructor of a cell object
  *
- * Creates and initializes a battery pack.
+ * Creates a cell object and initialize it with some default value
  * @param void
  * @return void
  */
-cBattery::cBattery()
+cCell::cCell()
 {
-	count = 0;
-	Vout = 0;
-	Iout = 0;
-	ElapsedTime = 0;
-	CutOffVoltage = 7;
-	tollarance = 0.005; //50mV
-	SimulatorState.unlock();
-	for(int i=0; i<3; i++)
-		Switch[i] = false;
+	Capacity = 800*3600;		//800 mAH
+	InitialVoltage = 12;		//12 V
+	SeriesResistance = 0.001; 	//10 mOhm
+	Shift1 = 10;
+	Shift2 = 85;
+	Drop1 = 5;
+	Drop2 = 10;
+	AttachedTo = (cBattery*)0;
+	Locked = false;
 }
 
 /**
- * @brief Returns the switch state of a particular cell
+ * @brief Sets the initialvoltage of the cell
  *
- * @param cell The cell number
- * @return true If the switch is on
- * @return false If the switch is off
- * @see Switch
+ * Initial voltage is the voltage that the cell voltage
+ * starts with when it is updated.
+ * Cellvoltage will be set to this voltage when the cell is resetted.
+ *
+ * @param double initial voltage to set in Volts
+ * @return bool true if successfully set the initial voltage
+ * false if the cell is locked.
  */
-bool cBattery::getSwitchState(int cell)
+bool cCell::setInitialVoltage(double initv)
 {
-	bool result;
-	AccessSynchroniser.lock();
-	result = Switch[cell];
-	AccessSynchroniser.unlock();
-	return result;
-}
-
-/**
- * @brief Returns the time in milisec for which the battery has ran
- *
- * The Elapsed time accounts for how long it has been running.
- * The Elapsed time resets to 0 when the battery is resetted.
- *
- * @param void
- * @return elapsed time in milisecond
- * @see ElapsedTime
- */
-double cBattery::getElapsedTime(void)
-{
-	double result;
-	AccessSynchroniser.lock();
-	result = ElapsedTime;
-	AccessSynchroniser.unlock();
-	return result;
-}
-
-/**
- * @brief Resets the battery and its cells
- *
- * Resets the battery to initial state.
- * Resets the connected cells. Resets Elapsed time to 0.
- *
- * @param void
- * @return true  successsfully reseted the battery.
- * @return false failed to reset one or more connected cell.
- */
-bool cBattery::reset(void)
-{
-	bool status = false;
-	bool lockStatus = false;
-	for(int i=0; i<count; i++)
-	{
-		lockStatus = Cell[i]->lock(this);
-		status = Cell[i]->loadDefaults(this);
-		if(!status)
-			break;
-		if(lockStatus)
-			Cell[i]->unlock(this);
-	}
-	ElapsedTime = 0;
-	Vout = 0;
-	Iout = 0;
-	return status;
-}
-
-/**
- * @brief Runs the battery with a load
- *
- * Repeteadly calculate the battery parameters with
- * a load in a fixed interval.
- *
- * @param double load 		Load to be connected with
- * @param double resolution	The interval between two successive calculatein, in miliseconds.
- * @param double speed		Speed of the calculation. reduces the wait time between two calculations.
- * @return true successfully started to run the battery
- * @return false battery is already runing
- */
-bool cBattery::run(double load,double resolution,double speed)
-{
-	if(IsRunning())
+	if(Locked)
 		return false;
-	SimulatorState.lock();
-	Runner = new std::thread(&cBattery::runBattery, this, load, resolution, speed);
+	InitialVoltage = initv;
 	return true;
 }
 
 /**
- * @brief Stops a battery if it is running
+ * @brief Sets the internal series resistance of the cell
  *
- * Signals the runner thread to stop and wait for it to stop.
- * @param void
- * @return true successsfully stopped the battery
- * @return false battery wasnot running
+ * series resistance is the fixed resistance of the cell
+ * that can be assumed is connected in series with the cell
+ * when it is operatied
+ *
+ * @param double series resistance to be set in Ohms
+ * @return bool true if successfully set the series resistance
+ * false if the cell is locked.
  */
-bool cBattery::stop(void)
+bool cCell::setSeriesResistance(double sres)
 {
-	if(IsRunning())
+	if(Locked)
+		return false;
+	SeriesResistance = sres;
+	return true;
+}
+
+/**
+ * @brief Sets the capacity of the cell
+ *
+ * capacity is the ability of the cell torun for a
+ * particular time when delivering a particulat current.
+ * It is the product of amount of current it can deliver and for the time
+ *
+ * @param double cap capacity to set in mAH
+ * @return bool true if successfully set the capacity
+ * false if the cell is locked.
+ */
+bool cCell::setCapacity(double cap)
+{
+	if(Locked)
+		return false;
+	Capacity = cap * 3600;
+	return true;
+}
+
+/**
+ * @brief Sets the gradient shifting points
+ *
+ * Sets the gradient shifting points on the capacity axis
+ * of the discharge curve.
+ *
+ * @param double 1st shifting point on the capacity axis as percentage
+ * @param double 2nd shifting point on the capacity axis as percentage
+ * @return bool true if successully sets the value
+ * false if cell is locked or value is not in range
+ */
+bool cCell::setShiftingPoints(double sh1, double sh2)
+{
+	if(Locked)
+		return false;
+	if(sh2 <= sh1)
+		return false;
+	Shift1 = sh1;
+	Shift2 = sh2;
+	return true;
+}
+
+/**
+ * @brief Sets the drop percentage of voltage at shifting points
+ *
+ * The drop percentage determines the discharge curve
+ * @param double drop of voltage at shift point 1 as percentage
+ * @param double drop of voltage at shift point 2 as percentage
+ * @return bool true if successfully sets the value.
+ * false if cell is locked or parameters are not in range.
+ */
+bool cCell::setDropAmounts(double d1, double d2)
+{
+	if(Locked)
+		return false;
+	if(d1>100 ||d1<0 ||d2 >100 ||d2<0)
+		return false;
+	if(d2 <= d1)
+		return false;
+	Drop1 = d1;
+	Drop2 = d2;
+	return true;
+}
+/**
+ * @brief locks the cell to a battery
+ *
+ * @param cBattery Pointer to the battery who wants the lock
+ * @return bool true if successfully locked.
+ * false if it is already locked
+ */
+bool cCell::lock(cBattery* owner)
+{
+	if(Locked)
+		return false;
+	AttachedTo = owner;
+	Locked = true;
+	initialise();
+	return true;
+}
+/**
+ * @brief unlocks the cell from its battery
+ *
+ * @param cBattery Owner of the cell
+ * @return bool true if successfully unlocked.
+ * false if owner does not own the battery or it is not locked
+ */
+bool cCell::unlock(cBattery* owner)
+{
+	if(!Locked)
+		return false;
+	if(AttachedTo != owner)
+		return false;
+	AttachedTo = (cBattery*)0;
+	Locked = false;
+	return true;
+}
+
+/**
+ * @brief Returns the initial voltage of the cell
+ *
+ * @param void
+ * @return double voltage in Volts
+ */
+double cCell::getInitialVoltage(void)
+{
+	double result;
+	AccessSynchroniser.lock();
+	result = InitialVoltage;
+	AccessSynchroniser.unlock();
+	return result;
+}
+
+/**
+ * @brief Returns the current voltage level of the cell
+ *
+ * Curent voltage denotes the voltagelevel the cell is
+ * having at any particular time. It si set to initial
+ * voltage when the cell is resetted
+ *
+ * @param void
+ * @return double current voltage in Volts
+ */
+double cCell::getCurrentVoltage(void)
+{
+	double result;
+	AccessSynchroniser.lock();
+	result = CurrentVoltage;
+	AccessSynchroniser.unlock();
+	return result;
+}
+
+/**
+ * @brief Returns the series resistance of the cell
+ *
+ * The series resistance is a constant resistance known
+ * as internal series resistance or equvalant series resistance
+ * @param void
+ * @return double resistance in Ohms
+ */
+double cCell::getSeriesResistance(void)
+{
+	double result;
+	AccessSynchroniser.lock();
+	result = SeriesResistance;
+	AccessSynchroniser.unlock();
+	return result;
+}
+
+/**
+ * @brief Returns the current being sourced by the cell
+ *
+ * The current current being sourced by the cell is returned in Ampere
+ * @param void
+ * @return double current in A
+ */
+double cCell::getSourceCurrent(void)
+{
+	double result;
+	AccessSynchroniser.lock();
+	result = SourceCurrent;
+	AccessSynchroniser.unlock();
+	return result;
+}
+
+/**
+ * @brief Returns the capacity of the cell
+ *
+ * @param void
+ * @return double capacity of the cell in mAH
+ */
+double cCell::getCapacity(void)
+{
+	double result;
+	AccessSynchroniser.lock();
+	result = Capacity/3600;
+	AccessSynchroniser.unlock();
+	return result;
+}
+
+/**
+ * @brief Returns the remaining capacity of the cell as percentage
+ *
+ * @param void
+ * @return double remaining capacity as percentage.
+ */
+double cCell::getRemainingCapacityPercentage(void)
+{
+	return RemainigCapacity;
+}
+
+/**
+ * @brief Initializes the battery characteristics parameters
+ *
+ * Sets the discharge curve characteristics and gradients
+ * @param void
+ * @return void
+ */
+void cCell::initialise(void)
+{
+	AccessSynchroniser.lock();
+	m1 = (InitialVoltage * Drop1) / (Capacity * Shift1);
+	m2 = (InitialVoltage * (Drop2 - Drop1)) / (Capacity * (Shift2 - Shift1));
+	m3 = (InitialVoltage * (100 - Drop2)) / (Capacity * (100 - Shift2));
+
+	CurrentVoltage = InitialVoltage;
+	DischargedCapacity = 0;
+	RemainigCapacity = 100;
+	Gradient = m1;
+	ConstantK = 0;
+	AccessSynchroniser.unlock();
+	return;
+}
+
+/**
+ * @brief Updates the cell parameters
+ *
+ * Updates the cell parameters as if it is connected to a output
+ * voltage for specific time. This actually implements the three
+ * stage liniar approximation of the discharge curve of the cell
+ *
+ * @param  owner Owner of te cell
+ * @param connected Weather or not the cell is connected
+ * @param vout 	 The output voltage it is connected to in Volt
+ * @param runtime For how long it was connected in milisec
+ * @return true if Successfully update the cell.false if
+ * The cell is not owned by the battery or runtime is 0
+ */
+bool cCell::update(cBattery* owner,bool connected, double scurrent, double runtime)
+{
+	if(AttachedTo != owner)
+		return false;
+	if(0 == runtime)
+		return false;
+	if(!connected)
 	{
-		SimulatorState.unlock();
-		Runner->join();
+		SourceCurrent = 0;
 		return true;
 	}
-	return false;
-}
-
-/**
- * @brief Adds a cell to the battery
- *
- * Addes a cell to the battery if it is not ruuning and not full.
- *
- * @param cCell* Adcell Pointer to a cell object
- * @return true successfully added the cell
- * @return false battery is running or the battery is full
- * @see cCell
- */
-bool cBattery::addCell(cCell* AdCell)
-{
-	if(IsRunning())
-		return false;
-	if(count>=3)
-		return false;
-	Cell[count++] = AdCell;
-	return true;
-}
-
-/**
- * @brief Sets the cutoff voltage of the battery
- *
- * Sets the cutoff voltage. If the battery output voltage
- * goes down below this, the battery will be stopped
- *
- * @param double cutoff the cutoff voltage to be set
- * @return true successfully set the cutoff voltage
- * @return false battery is running
- */
-bool cBattery::setCutOffVoltage(double cutoff)
-{
-	if(IsRunning())
-		return false;
 	AccessSynchroniser.lock();
-	CutOffVoltage = cutoff;
+	SourceCurrent = scurrent;
+	DischargedCapacity += (SourceCurrent * runtime);
+	RemainigCapacity = ((Capacity - DischargedCapacity) / Capacity) * 100;
+	CurrentVoltage = CurrentVoltage - Gradient*SourceCurrent*runtime + ConstantK;
+
+	if((Gradient == m1) && (DischargedCapacity >= ((Shift1*Capacity)/100)))
+	{
+		Gradient = m2;
+		ConstantK += (m2 - m1)*DischargedCapacity;
+	}
+	if((Gradient == m2) && (DischargedCapacity >= ((Shift2*Capacity)/100)))
+	{
+		Gradient = m3;
+		ConstantK += (m3 - m2)*DischargedCapacity;
+	}
 	AccessSynchroniser.unlock();
 	return true;
 }
 
 /**
- * @brief returns the Battery output voltage
+ * @brief Loads the default values of the cell
  *
- * @param void
- * @return the output voltage in volt
- */
-double cBattery::getVout(void)
-{
-	double result;
-	AccessSynchroniser.lock();
-	result = Vout;
-	AccessSynchroniser.unlock();
-	return result;
-}
-
-/**
- * @brief returns the Battery output current
+ * Resets the cell voltage to initial voltage
+ * and, capacity to its full.
  *
- * @param void
- * @return the output current in mini Ampere (mA)
+ * @param owner Pointer to the Battery pack that the caell is attached to
+ * @return true if successfuly loaded the default values.false if The battrey does not own the cell.
  */
-double cBattery::getIout(void)
+bool cCell::loadDefaults(cBattery* owner)
 {
-	double result;
-	AccessSynchroniser.lock();
-	result = Iout;
-	AccessSynchroniser.unlock();
-	return (result*1000);
-}
-
-/**
- * @brief Determines the runner thread is still runnig or not
- *
- * wrapper function to ContinueRunning()
- * @param void
- * @return true Battery is running
- * @return false Battery is not running
- * @see ContinueRunnig
- */
-bool cBattery::IsRunning(void)
-{
-	return ContinueRunning();
-}
-
-/**
- * @brief Determines wheather the simulator state is locked or not.
- *
- * Determines if the simulator state is locked. The runner thread will queary
- * and continue to run if simulator state is locked.
- * Simulator state also states whether the thread is runnig or not.
- * @param void
- * @return true Simulator state is locked
- * @return false simulator state is unlocked
- * @see IsRunning
- * @see SimulatorState
- */
-bool cBattery::ContinueRunning(void)
-{
-	if(SimulatorState.try_lock())
-	{
-		SimulatorState.unlock();
+	if(owner != AttachedTo)
 		return false;
-	}
-	return true;
-}
-
-/**
- * @brief The runner thread function that updates the battery parameters
- *
- * Runs untill a stop signal is received or battery voltage goes down cutoff voltage
- * in a specific speed and update the battery parameters and cells in a specific interval.
- * writes to a  log file for each run.
- *
- * @param double load 		Load to be connected with
- * @param double resolution	The interval between two successive calculatein, in miliseconds.
- * @param double speed		Speed of the calculation. reduces the wait time between two calculations.
- * @return void
- */
-void cBattery::runBattery(double load, double resolution, double speed)
-{
-	if(resolution == 0 || speed == 0 || load == 0)
-		return;
-	bool status = false;
-	int i;
-	double seriesResistance[count];
-	for(i=0; i<count; i++)
-	{
-		status = Cell[i]->lock(this);
-		if(!status)
-			return;
-		seriesResistance[i] = Cell[i]->getSeriesResistance();
-	}
-
-	int j, iTemp;
-	double dTemp;
-	double outVolt=0;
-	bool localSwitch[count];
-	int sortedCells[count];
-	double cellVoltages[count];
-	double tempVoltages[count];
-	double sourceCurrent[count];
-	double ratio;
-
-	FILE* logFile;
-	logFile = fopen("./batsim.log","a");
-
-	fprintf(logFile,"***************************************************\n");
-	fprintf(logFile,"\t\t\tBattery Simulator\n");
-	fprintf(logFile,"***************************************************\n");
-	fprintf(logFile,"\n[%9.3f]\tSimulator Started\n",ElapsedTime/1000);
-
-	while(ContinueRunning())
-	{
-
-		fprintf(logFile,"\n[%9.3f]\toutVolt: %f\tIout: %f\n\tCell 1:: %d: %f V,\t%f mA\n\tCell 2:: %d: %f V,\t%f mA\n\tCell 3:: %d: %f V,\t%f mA\n",
-			ElapsedTime/1000,Vout,Iout*1000,Switch[0],Cell[0]->getCurrentVoltage(),Cell[0]->getSourceCurrent()*1000,Switch[1],Cell[1]->getCurrentVoltage(),Cell[1]->getSourceCurrent()*1000,Switch[2],Cell[2]->getCurrentVoltage(),Cell[2]->getSourceCurrent()*1000);
-
-	for(i=0;i<count;i++)
-	{
-		localSwitch[i] = false;
-		sortedCells[i] = i;
-		cellVoltages[i] = Cell[i]->getCurrentVoltage();
-		tempVoltages[i] = cellVoltages[i];
-	}
-
-	for(i=0;i<count;i++)
-	{
-		for(j=i+1;j<count;j++)
-		{
-			if(tempVoltages[i]<tempVoltages[j])
-			{
-				iTemp=sortedCells[i];
-				dTemp=tempVoltages[i];
-				sortedCells[i]=sortedCells[j];
-				tempVoltages[i]=tempVoltages[j];
-				sortedCells[j]=iTemp;
-				tempVoltages[j]=dTemp;
-			}
-		}
-	}
-
-	localSwitch[sortedCells[0]] = true;
-	outVolt = cellVoltages[sortedCells[0]];
-	for(i=1;i<count;i++)
-	{
-		if((cellVoltages[sortedCells[0]] - cellVoltages[sortedCells[i]])<=tollarance)
-		{
-			localSwitch[sortedCells[i]] = true;
-			outVolt = cellVoltages[sortedCells[i]];
-		}
-	}
-	ratio = 0;
-	for(i=0;i<count;i++)
-	{
-		if(localSwitch[i])
-			ratio += cellVoltages[i]/seriesResistance[i];
-	}
-
 	AccessSynchroniser.lock();
-	Vout = outVolt;
-	Iout = Vout / load;
-
-	for(i=0;i<count;i++)
-	{
-		if(localSwitch[i])
-			sourceCurrent[i] = (Iout*cellVoltages[i])/(ratio * seriesResistance[i]);
-		else
-			sourceCurrent[i] = 0;
-		Switch[i] = localSwitch[i];
-		Cell[i]->update(this,localSwitch[i],sourceCurrent[i],resolution);
-	}
+	CurrentVoltage = InitialVoltage;
+	RemainigCapacity = 100;
+	DischargedCapacity = 0;
+	Gradient = m1;
+	ConstantK = 0;
 	AccessSynchroniser.unlock();
-
-		//sleep for Inteval
-		usleep(resolution*1000/speed);
-		AccessSynchroniser.lock();
-		ElapsedTime += resolution;
-		AccessSynchroniser.unlock();
-
-		//if total voltage < MIN, break;
-		if(outVolt < CutOffVoltage)
-		{
-			for(i = 0; i<count; i++)
-				localSwitch[i] = false;
-			SimulatorState.unlock();
-			std::cout<<"\nBattery exhausted\nSimulation completed\n";
-			fprintf(logFile,"ALERT :: exhausted\n");
-			std::cout<<"BatSim >> ";
-		}
-	}
-	fprintf(logFile,"\n[%9.3f]\tSimulator Stopped\n",ElapsedTime/1000);
-	fcloseall();
-	for(i =0;i<count;i++)
-		Cell[0]->unlock(this);
-	return;
+	return true;
 }
