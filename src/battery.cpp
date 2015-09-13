@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <iostream> 
 
+
 cBattery::cBattery()
 {
 	count = 0;
