@@ -1,5 +1,5 @@
-
-/* * @date 11/09/2015
+/*
+ * @date 11/09/2015
  * @author Ugra Narasimha
  **/
 #ifndef  BATTERY_CLASS
@@ -27,16 +27,17 @@ class cBattery
 	private:
 		cCell *Cell[3];		
 		bool Switch[3];		
-		double Vout;		
-		double Iout;		
-		double ElapsedTime;	
+		double Vout;			
+		double Iout;			
+		double ElapsedTime;		.
 		double CutOffVoltage;	
 		double tollarance;
 		std::thread* Runner;	
 		std::mutex SimulatorState;	
 		void runBattery(double load,double resolution,double speed);
 		bool ContinueRunning(void);
-		int count;				
-		std::mutex AccessSynchroniser; };
+		int count;		
+		std::mutex AccessSynchroniser; 
+};
 
 #endif //BATTERY_CLASS
