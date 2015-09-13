@@ -1,15 +1,5 @@
-/**
- * @file battery.hpp
- * @brief Defines a battery class.
- *
- * A battery is consist of one or more cells and switches.
- * Battery provides a output voltage and output current when
- * connected to a load. It discharges the cells untill
- * a cutoff voltage is reached.
- *
- * @see cell.hpp
- *
- * @date 11/09/2015
+
+/* * @date 11/09/2015
  * @author Ugra Narasimha
  **/
 #ifndef  BATTERY_CLASS
@@ -20,15 +10,6 @@
 #include <mutex>
 
 
-/**
- * @brief defines a battery
- *
- * Add cells to the battery and run for a specific load.
- * The cells will be updated in specific interval at a specific speed.
- * The connected cells can be resetted from its battery.
- *
- * @see cCell
- **/
 class cBattery
 {
 	public:
@@ -44,19 +25,18 @@ class cBattery
 		bool getSwitchState(int Cell);
 		bool IsRunning(void);
 	private:
-		cCell *Cell[3];		///<Holds the cells that are added. @see addCell
-		bool Switch[3];		///<A switch for each cell
-		double Vout;			///<Output voltage of the battery in Volts.
-		double Iout;			///<Output current of the battery in Ampere.
-		double ElapsedTime;		///<Time for which the battery is running in mS.
-		double CutOffVoltage;	///<Battery will be disconnected when Output voltage drops below this. expressed in Volts.
+		cCell *Cell[3];		
+		bool Switch[3];		
+		double Vout;		
+		double Iout;		
+		double ElapsedTime;	
+		double CutOffVoltage;	
 		double tollarance;
-		std::thread* Runner;	///<Pointer to the runner thread
-		std::mutex SimulatorState;	///<Used to signal thread terminaton event
+		std::thread* Runner;	
+		std::mutex SimulatorState;	
 		void runBattery(double load,double resolution,double speed);
 		bool ContinueRunning(void);
-		int count;				///<number of cells added in the battery
-		std::mutex AccessSynchroniser; ///<Lock to synchronize access to members from different thread
-};
+		int count;				
+		std::mutex AccessSynchroniser; };
 
 #endif //BATTERY_CLASS
