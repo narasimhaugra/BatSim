@@ -1,12 +1,5 @@
-
-/**
- * @file simulator.c
- * @brief Battery simulator.
- *
- * Implements the command line interface for the simulator.
- * @author ugra narasimha 
+/* * @author ugra narasimha 
  * @date 12 Sep 2015
- * @see batsim.hpp
 */
 
 #include "../includes/cell.hpp"
@@ -19,12 +12,8 @@
 #include <iomanip>
 
 
-/**
- * @brief Shows the help text.
- *
- * @param void
- * @return void
- */
+
+
 void showHelp(void)
 {
 	std::cout<<"\nBATSIM \n";
@@ -51,7 +40,7 @@ void showHelp(void)
 	std::cout<<"\nDEFAULT VALUES\n\
 			\n\tInitial voltages  : 12.20 V, 10.90 V, 11.8 V\
 			\n\tSeries resistances: 30 Ohm,  10 Ohm,  20 Ohm\
-			\n\tLoad              : 160 Ohm\
+			\n\tLoad              : 100 Ohm\
 			\n\tCapacity          : 800 mAH\
 			\n\tshift1            : 10 %%\
 			\n\tshift2            : 90 %%\
@@ -67,9 +56,6 @@ int main()
 	cBattery BatPack;
 	cBatSim Simulator;
 
-	//Cell[0].setSeriesResistance(50);
-	//Cell[1].setSeriesResistance(30);
-	//Cell[2].setSeriesResistance(40);
 	Cell[0].setInitialVoltage(12.2);
 	Cell[1].setInitialVoltage(10.9);
 	Cell[2].setInitialVoltage(11.8);
