@@ -1,4 +1,6 @@
-/* * @author ugra narasimha 
+
+/*
+ * @author ugra narasimha 
  * @date 12 Sep 2015
 */
 
@@ -10,8 +12,6 @@
 
 #include <iostream>
 #include <iomanip>
-
-
 
 
 void showHelp(void)
@@ -40,7 +40,7 @@ void showHelp(void)
 	std::cout<<"\nDEFAULT VALUES\n\
 			\n\tInitial voltages  : 12.20 V, 10.90 V, 11.8 V\
 			\n\tSeries resistances: 30 Ohm,  10 Ohm,  20 Ohm\
-			\n\tLoad              : 100 Ohm\
+			\n\tLoad              : 160 Ohm\
 			\n\tCapacity          : 800 mAH\
 			\n\tshift1            : 10 %%\
 			\n\tshift2            : 90 %%\
@@ -300,5 +300,4 @@ int main()
 	}
 	return 0;
 }
-
 
