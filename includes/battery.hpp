@@ -29,7 +29,7 @@ class cBattery
 		bool Switch[3];		
 		double Vout;			
 		double Iout;			
-		double ElapsedTime;		.
+		double ElapsedTime;		
 		double CutOffVoltage;	
 		double tollarance;
 		std::thread* Runner;	
