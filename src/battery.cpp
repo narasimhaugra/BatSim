@@ -1,27 +1,13 @@
-/**
- * @file battery.cpp
- * @brief Implementation of the Battery class
- *
- * A battery consists of one or more cells. Cells are connected in
- * fixed way and the battery behaves acordingly. A battery can be
- * connected to a load and run.
- *
- * @author ugra narasimha
+/* @author ugra narasimha
  * @date 12 Sep 2015
- * @see battery.h
  */
 
 #include "../includes/battery.hpp"
 #include <unistd.h>
-#include <iostream> ///<for writing to the log file
+#include <iostream> 
 
-/**
- * @brief Constructor of a Battery pack object
- *
- * Creates and initializes a battery pack.
- * @param void
- * @return void
- */
+
+
 cBattery::cBattery()
 {
 	count = 0;
@@ -35,14 +21,7 @@ cBattery::cBattery()
 		Switch[i] = false;
 }
 
-/**
- * @brief Returns the switch state of a particular cell
- *
- * @param cell The cell number
- * @return true If the switch is on
- * @return false If the switch is off
- * @see Switch
- */
+
 bool cBattery::getSwitchState(int cell)
 {
 	bool result;
@@ -52,16 +31,7 @@ bool cBattery::getSwitchState(int cell)
 	return result;
 }
 
-/**
- * @brief Returns the time in milisec for which the battery has ran
- *
- * The Elapsed time accounts for how long it has been running.
- * The Elapsed time resets to 0 when the battery is resetted.
- *
- * @param void
- * @return elapsed time in milisecond
- * @see ElapsedTime
- */
+
 double cBattery::getElapsedTime(void)
 {
 	double result;
@@ -71,16 +41,7 @@ double cBattery::getElapsedTime(void)
 	return result;
 }
 
-/**
- * @brief Resets the battery and its cells
- *
- * Resets the battery to initial state.
- * Resets the connected cells. Resets Elapsed time to 0.
- *
- * @param void
- * @return true  successsfully reseted the battery.
- * @return false failed to reset one or more connected cell.
- */
+
 bool cBattery::reset(void)
 {
 	bool status = false;
@@ -100,18 +61,7 @@ bool cBattery::reset(void)
 	return status;
 }
 
-/**
- * @brief Runs the battery with a load
- *
- * Repeteadly calculate the battery parameters with
- * a load in a fixed interval.
- *
- * @param double load 		Load to be connected with
- * @param double resolution	The interval between two successive calculatein, in miliseconds.
- * @param double speed		Speed of the calculation. reduces the wait time between two calculations.
- * @return true successfully started to run the battery
- * @return false battery is already runing
- */
+
 bool cBattery::run(double load,double resolution,double speed)
 {
 	if(IsRunning())
@@ -121,14 +71,6 @@ bool cBattery::run(double load,double resolution,double speed)
 	return true;
 }
 
-/**
- * @brief Stops a battery if it is running
- *
- * Signals the runner thread to stop and wait for it to stop.
- * @param void
- * @return true successsfully stopped the battery
- * @return false battery wasnot running
- */
 bool cBattery::stop(void)
 {
 	if(IsRunning())
@@ -140,16 +82,7 @@ bool cBattery::stop(void)
 	return false;
 }
 
-/**
- * @brief Adds a cell to the battery
- *
- * Addes a cell to the battery if it is not ruuning and not full.
- *
- * @param cCell* Adcell Pointer to a cell object
- * @return true successfully added the cell
- * @return false battery is running or the battery is full
- * @see cCell
- */
+
 bool cBattery::addCell(cCell* AdCell)
 {
 	if(IsRunning())
@@ -160,16 +93,8 @@ bool cBattery::addCell(cCell* AdCell)
 	return true;
 }
 
-/**
- * @brief Sets the cutoff voltage of the battery
- *
- * Sets the cutoff voltage. If the battery output voltage
- * goes down below this, the battery will be stopped
- *
- * @param double cutoff the cutoff voltage to be set
- * @return true successfully set the cutoff voltage
- * @return false battery is running
- */
+
+
 bool cBattery::setCutOffVoltage(double cutoff)
 {
 	if(IsRunning())
@@ -180,12 +105,7 @@ bool cBattery::setCutOffVoltage(double cutoff)
 	return true;
 }
 
-/**
- * @brief returns the Battery output voltage
- *
- * @param void
- * @return the output voltage in volt
- */
+
 double cBattery::getVout(void)
 {
 	double result;
@@ -195,12 +115,7 @@ double cBattery::getVout(void)
 	return result;
 }
 
-/**
- * @brief returns the Battery output current
- *
- * @param void
- * @return the output current in mini Ampere (mA)
- */
+
 double cBattery::getIout(void)
 {
 	double result;
@@ -210,32 +125,14 @@ double cBattery::getIout(void)
 	return (result*1000);
 }
 
-/**
- * @brief Determines the runner thread is still runnig or not
- *
- * wrapper function to ContinueRunning()
- * @param void
- * @return true Battery is running
- * @return false Battery is not running
- * @see ContinueRunnig
- */
+
 bool cBattery::IsRunning(void)
 {
 	return ContinueRunning();
 }
 
-/**
- * @brief Determines wheather the simulator state is locked or not.
- *
- * Determines if the simulator state is locked. The runner thread will queary
- * and continue to run if simulator state is locked.
- * Simulator state also states whether the thread is runnig or not.
- * @param void
- * @return true Simulator state is locked
- * @return false simulator state is unlocked
- * @see IsRunning
- * @see SimulatorState
- */
+
+
 bool cBattery::ContinueRunning(void)
 {
 	if(SimulatorState.try_lock())
@@ -246,18 +143,7 @@ bool cBattery::ContinueRunning(void)
 	return true;
 }
 
-/**
- * @brief The runner thread function that updates the battery parameters
- *
- * Runs untill a stop signal is received or battery voltage goes down cutoff voltage
- * in a specific speed and update the battery parameters and cells in a specific interval.
- * writes to a  log file for each run.
- *
- * @param double load 		Load to be connected with
- * @param double resolution	The interval between two successive calculatein, in miliseconds.
- * @param double speed		Speed of the calculation. reduces the wait time between two calculations.
- * @return void
- */
+
 void cBattery::runBattery(double load, double resolution, double speed)
 {
 	if(resolution == 0 || speed == 0 || load == 0)
@@ -353,13 +239,12 @@ void cBattery::runBattery(double load, double resolution, double speed)
 	}
 	AccessSynchroniser.unlock();
 
-		//sleep for Inteval
 		usleep(resolution*1000/speed);
 		AccessSynchroniser.lock();
 		ElapsedTime += resolution;
 		AccessSynchroniser.unlock();
 
-		//if total voltage < MIN, break;
+		
 		if(outVolt < CutOffVoltage)
 		{
 			for(i = 0; i<count; i++)
