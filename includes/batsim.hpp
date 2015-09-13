@@ -1,11 +1,6 @@
 /**
- * @file batsim.hpp
- * @brief Header for command line interface
- * 
- * Defines the command that the CLI will accept
  * @author Ugra Narasimha
  * @date 11/09/2014
- * @see batsim.cpp
  */
 #ifndef  BATSIM_H
 #define  BATSIM_H
