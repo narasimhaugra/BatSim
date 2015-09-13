@@ -1,12 +1,11 @@
-/* @author ugra narasimha
+/*
+ * @author ugra narasimha
  * @date 12 Sep 2015
  */
 
 #include "../includes/battery.hpp"
 #include <unistd.h>
-#include <iostream> 
-
-
+#include <iostream> ///<for writing to the log file
 
 cBattery::cBattery()
 {
@@ -21,7 +20,6 @@ cBattery::cBattery()
 		Switch[i] = false;
 }
 
-
 bool cBattery::getSwitchState(int cell)
 {
 	bool result;
@@ -31,7 +29,6 @@ bool cBattery::getSwitchState(int cell)
 	return result;
 }
 
-
 double cBattery::getElapsedTime(void)
 {
 	double result;
@@ -40,7 +37,6 @@ double cBattery::getElapsedTime(void)
 	AccessSynchroniser.unlock();
 	return result;
 }
-
 
 bool cBattery::reset(void)
 {
@@ -60,7 +56,6 @@ bool cBattery::reset(void)
 	Iout = 0;
 	return status;
 }
-
 
 bool cBattery::run(double load,double resolution,double speed)
 {
@@ -82,7 +77,6 @@ bool cBattery::stop(void)
 	return false;
 }
 
-
 bool cBattery::addCell(cCell* AdCell)
 {
 	if(IsRunning())
@@ -92,8 +86,6 @@ bool cBattery::addCell(cCell* AdCell)
 	Cell[count++] = AdCell;
 	return true;
 }
-
-
 
 bool cBattery::setCutOffVoltage(double cutoff)
 {
@@ -115,7 +107,6 @@ double cBattery::getVout(void)
 	return result;
 }
 
-
 double cBattery::getIout(void)
 {
 	double result;
@@ -130,7 +121,6 @@ bool cBattery::IsRunning(void)
 {
 	return ContinueRunning();
 }
-
 
 
 bool cBattery::ContinueRunning(void)
@@ -239,12 +229,13 @@ void cBattery::runBattery(double load, double resolution, double speed)
 	}
 	AccessSynchroniser.unlock();
 
+		//sleep for Inteval
 		usleep(resolution*1000/speed);
 		AccessSynchroniser.lock();
 		ElapsedTime += resolution;
 		AccessSynchroniser.unlock();
 
-		
+		//if total voltage < MIN, break;
 		if(outVolt < CutOffVoltage)
 		{
 			for(i = 0; i<count; i++)
