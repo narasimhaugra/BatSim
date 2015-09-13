@@ -1,6 +1,7 @@
-/* @author Ugra Narasimha
+/*
+ * @author Ugra Narasimha
  * @date 11/09/2015
-  */
+ */
 #ifndef  CPARSER_CLASS
 #define  CPARSER_CLASS
 
@@ -17,7 +18,7 @@ class cParser
 		int getParamCount(void);
 	private:
 		char command[20];	
-		char key[20];		
+		char key[20];	
 		double value[3];    
 		int CommandNumber;  
 		int KeyNumber;      
