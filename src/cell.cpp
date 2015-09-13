@@ -1,15 +1,14 @@
-/**
- * @author ugra narasimha
+/*
+ * * @author ugra narasimha
  * @date 12 Sep 2015
  */
 #include "../includes/cell.hpp"
 
-
 cCell::cCell()
 {
-	Capacity = 800*3600;		
-	InitialVoltage = 12;		
-	SeriesResistance = 0.001; 	
+	Capacity = 800*3600;		//800 mAH
+	InitialVoltage = 12;		//12 V
+	SeriesResistance = 0.001; 	//10 mOhm
 	Shift1 = 10;
 	Shift2 = 85;
 	Drop1 = 5;
@@ -17,7 +16,6 @@ cCell::cCell()
 	AttachedTo = (cBattery*)0;
 	Locked = false;
 }
-
 
 bool cCell::setInitialVoltage(double initv)
 {
@@ -27,7 +25,6 @@ bool cCell::setInitialVoltage(double initv)
 	return true;
 }
 
-
 bool cCell::setSeriesResistance(double sres)
 {
 	if(Locked)
@@ -36,7 +33,6 @@ bool cCell::setSeriesResistance(double sres)
 	return true;
 }
 
-
 bool cCell::setCapacity(double cap)
 {
 	if(Locked)
@@ -44,8 +40,6 @@ bool cCell::setCapacity(double cap)
 	Capacity = cap * 3600;
 	return true;
 }
-
-
 
 bool cCell::setShiftingPoints(double sh1, double sh2)
 {
@@ -57,8 +51,6 @@ bool cCell::setShiftingPoints(double sh1, double sh2)
 	Shift2 = sh2;
 	return true;
 }
-
-
 
 bool cCell::setDropAmounts(double d1, double d2)
 {
@@ -72,9 +64,6 @@ bool cCell::setDropAmounts(double d1, double d2)
 	Drop2 = d2;
 	return true;
 }
-
-
-
 bool cCell::lock(cBattery* owner)
 {
 	if(Locked)
@@ -84,8 +73,6 @@ bool cCell::lock(cBattery* owner)
 	initialise();
 	return true;
 }
-
-
 bool cCell::unlock(cBattery* owner)
 {
 	if(!Locked)
@@ -106,7 +93,6 @@ double cCell::getInitialVoltage(void)
 	return result;
 }
 
-
 double cCell::getCurrentVoltage(void)
 {
 	double result;
@@ -124,6 +110,7 @@ double cCell::getSeriesResistance(void)
 	AccessSynchroniser.unlock();
 	return result;
 }
+
 double cCell::getSourceCurrent(void)
 {
 	double result;
@@ -146,7 +133,6 @@ double cCell::getRemainingCapacityPercentage(void)
 {
 	return RemainigCapacity;
 }
-
 
 void cCell::initialise(void)
 {
