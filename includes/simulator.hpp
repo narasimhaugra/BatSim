@@ -1,13 +1,12 @@
-/* @author Ugra Narasimha
+/*
+ * @author Ugra Narasimha
  * @date 11/09/2015
  */
-
 #ifndef  SIMULATOR_CLASS
 #define  SIMULATOR_CLASS
 
 #include "battery.hpp"
 
-/
 
 class cBatSim
 {
@@ -24,9 +23,9 @@ class cBatSim
 		bool connect(double);
 		double getLoad(void);
 	private:
-		double Load;		
+		double Load;	
 		cBattery* BatPack;  
-		double Speed;	
+		double Speed;		
 		double Resolution;  
 		bool BatteryConnected;
 };
