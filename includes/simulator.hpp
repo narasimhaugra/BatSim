@@ -1,24 +1,14 @@
-/**
- * @file simulator.hpp
- * @brief Defines the simulator class
- *
- * The simulator brings up the load and battery pack
- * together to run the battery and observe the changes
- * @author Ugra Narasimha
+/* @author Ugra Narasimha
  * @date 11/09/2015
- * @see simulator.cpp
  */
+
 #ifndef  SIMULATOR_CLASS
 #define  SIMULATOR_CLASS
 
 #include "battery.hpp"
 
-/**
- * @brief The simulator class
- *
- * Provides an interface to run, stop, pause and resume a battery.
- * Connects the battery with load and maintain speed and resolution of the simulation
- */
+/
+
 class cBatSim
 {
 	public:
@@ -34,11 +24,11 @@ class cBatSim
 		bool connect(double);
 		double getLoad(void);
 	private:
-		double Load;		///<Load to connect with the battery
-		cBattery* BatPack;  ///<Pointer to the Battery to be simulated
-		double Speed;		///<simulation speed. used to reduce the delay by this factor
-		double Resolution;  ///resolution of the simulation. It determines how often battery will be sampled
-		bool BatteryConnected;///<denotes weather a battery is connected or not
+		double Load;		
+		cBattery* BatPack;  
+		double Speed;	
+		double Resolution;  
+		bool BatteryConnected;
 };
 
 #endif //SIMULATOR_CLASS
