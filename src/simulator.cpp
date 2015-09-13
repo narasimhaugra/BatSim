@@ -1,23 +1,11 @@
-/**
- * @file simulator.cpp
- * @brief Implements the simulator
- *
- * implements the public interface of the simulator
+/*
  * @author ugra narasimha
  * @date 12 Sep 2015
- * @see simulator.hpp
  */
 #include "../includes/simulator.hpp"
 #include <iostream>
 
-/**
- * @brief Constructor for simulator object
- *
- * Creates a simulator object anf initializes
- * speed and resolution by default value
- * @param void
- * @return void
- */
+
 cBatSim::cBatSim(void)
 {
 	Resolution = 100;
@@ -25,15 +13,7 @@ cBatSim::cBatSim(void)
 	BatteryConnected = false;
 }
 
-/**
- * @brief Overloaded constructor
- *
- * Another constructor for simulator object
- * This sets the speed and resolution to specific value
- * @param int speed
- * @param double resolution
- * @return void
- */
+
 cBatSim::cBatSim(int multiplier, double res)
 {
 	if(0 == res)
@@ -47,14 +27,7 @@ cBatSim::cBatSim(int multiplier, double res)
 	BatteryConnected = false;
 }
 
-/**
- * @brief Starts a simulation
- *
- * Makes the battery to run if it is not already
- * @param void
- * @return bool true if successfully starts simulation
- * false if no battery is present or simulation is already running
- */
+
 bool cBatSim::start(void)
 {
 	if(!BatteryConnected)
@@ -65,15 +38,7 @@ bool cBatSim::start(void)
 	return (BatPack->run(Load,Resolution,Speed));
 }
 
-/**
- * @brief stops a simulation
- *
- * Stop the battery if it is running and reset it
- * to its initial state
- * @param void
- * @return bool true if successfully stopes a simulation
- * false if no battery is connected or simulation is not runing
- */
+
 bool cBatSim::stop(void)
 {
 	if(!BatteryConnected)
@@ -89,14 +54,6 @@ bool cBatSim::stop(void)
 	return false;
 }
 
-/**
- * @brief Pause a simulation
- *
- * Stops a simulation but do not reset the battery state
- * @param void
- * @return bool true if successfully paused a simulation
- * false if simulation is not running or battery is not connected
- */
 bool cBatSim::pause(void)
 {
 	if(!BatteryConnected)
@@ -106,29 +63,12 @@ bool cBatSim::pause(void)
 	return (BatPack->stop());
 }
 
-/**
- * @brief resuems a simulation
- *
- * Starts a simulation from where it was stopped
- * @param void
- * @return bool true if successfully starts
- * false if already running or no battery present
- */
 bool cBatSim::resume(void)
 {
 	return start();
 }
 
-/**
- * @brief Sets the simulation speed
- *
- * Sets the simulation speed if battery is present
- * and simulation is not running
- * @param int number of times the simulation sppe dto be increased
- * @return bool true if successfully sets the speed
- * false id battery not present or simulation is running or
- * the input is less than 1
- */
+
 bool cBatSim::setSpeed(int multiplier)
 {
 	if(BatteryConnected)
@@ -142,14 +82,6 @@ bool cBatSim::setSpeed(int multiplier)
 	return true;
 }
 
-/**
- * @brief Sets the resolution of the simulation
- *
- * Sets the sampling interval for battery statistics
- * @param double time in milisecond
- * @return bool true if successfully set
- * false if simulation is running or input is less than or equals 0
- */
 bool cBatSim::setResolution(double milisec)
 {
 	if(BatteryConnected)
@@ -163,14 +95,6 @@ bool cBatSim::setResolution(double milisec)
 	return true;
 }
 
-/**
- * @brief Connects a battery to the simulator
- *
- * Connects a battery or replaces othe one if simulation is not running
- * @param cBattery* pointer to the batttery to be connected
- * @return bool true is successfully cnnected.
- * false if simulation is running
- */
 bool cBatSim::connect(cBattery* battery)
 {
 	if(BatteryConnected)
@@ -183,15 +107,6 @@ bool cBatSim::connect(cBattery* battery)
 	return true;
 }
 
-/**
- * @brief Connects a load tothe simulator
- *
- * Connects the load to the simulator. this load
- * is to be attached to the battery
- * @param double load to be connected in Ohms
- * @return bool true if successful
- * false if simulation is running
- */
 bool cBatSim::connect(double load)
 {
 	if(BatteryConnected)
@@ -203,12 +118,6 @@ bool cBatSim::connect(double load)
 	return true;
 }
 
-/**
- * @brief REturns the connected load
- *
- * @param void
- * @return double connected load in Ohm
- */
 double cBatSim::getLoad(void)
 {
 	return Load;
