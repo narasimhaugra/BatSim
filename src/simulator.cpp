@@ -5,14 +5,12 @@
 #include "../includes/simulator.hpp"
 #include <iostream>
 
-
 cBatSim::cBatSim(void)
 {
 	Resolution = 100;
 	Speed = 1;
 	BatteryConnected = false;
 }
-
 
 cBatSim::cBatSim(int multiplier, double res)
 {
@@ -27,7 +25,6 @@ cBatSim::cBatSim(int multiplier, double res)
 	BatteryConnected = false;
 }
 
-
 bool cBatSim::start(void)
 {
 	if(!BatteryConnected)
@@ -37,7 +34,6 @@ bool cBatSim::start(void)
 	std::cout<<"calling battery run"<<std::endl;
 	return (BatPack->run(Load,Resolution,Speed));
 }
-
 
 bool cBatSim::stop(void)
 {
@@ -67,7 +63,6 @@ bool cBatSim::resume(void)
 {
 	return start();
 }
-
 
 bool cBatSim::setSpeed(int multiplier)
 {
