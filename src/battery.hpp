@@ -5,7 +5,7 @@
 
 #include "../includes/battery.hpp"
 #include <unistd.h>
-#include <iostream> ///<for writing to the log file
+#include <iostream> 
 
 cBattery::cBattery()
 {
