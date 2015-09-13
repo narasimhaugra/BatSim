@@ -1,10 +1,4 @@
-/**
- * @file cparser.cpp
- * @brief Implementation of command parser class
- * 
- * The command parser takes input from user and tokenize it
- * It can compare the input against a valid command and key list
- * and returns the unique function number
+/*
  * @author ugra narasimha
  * @date 12 Sep 2015
  * @see cparser.hpp
@@ -14,26 +8,12 @@
 #include <stdio.h>
 #include <string.h>
 
-/**
- * @brief Constructor of the cparser object
- * 
- * @param void
- * @return void
- */
+
 cParser::cParser()
 {
 }
 
-/**
- * @brief Gets input from user
- * 
- * Shows a promp, gets user input and fills the key,
- * command and values.
- * 
- * @param void
- * @return bool true if successfully parses the user input
- * false if failed to get the input or parse it
- */
+
 bool cParser::getInput(void)
 {
 	char* buffer = new char[100];
@@ -52,15 +32,7 @@ bool cParser::getInput(void)
 	return true;
 }
 
-/**
- * @brief Parse the input
- * 
- * Parse the input and compare the key and command agains a valid set
- * @param const char** valid commands
- * @param const char** valid keys
- * @return bool true if successfully parsed
- * false if number of user inpt parameter is less than 1 or valid command is NULL
- */
+
 bool cParser::parseInput(const char** validCommands, const char** validKeys)
 {
 	if(NumberofParam <1)
@@ -94,35 +66,22 @@ bool cParser::parseInput(const char** validCommands, const char** validKeys)
 	return true;
 }
 
-/**
- * @brief Returns the last command
- * 
- * @param void
- * @return char* the last command
- */
+
+
 char* cParser::getLastCommand(void)
 {
 	return command;
 }
 
-/**
- * @brief Returns the last key entered
- * 
- * @param void
- * @return char* The key
- */
+
+
 char* cParser::getLastKey(void)
 {
 	return key;
 }
 
-/**
- * @brief Returns the specific parameter
- * 
- * Returns the parameter at index 
- * @param int index of the parameter to be returned
- * @return double the parameter at index
- */
+
+
 double cParser::getParam(int index)
 {
 	return Param[index];
@@ -133,12 +92,7 @@ int cParser::getFunctionNumber(void)
 	return FunctionNumber;
 }
 
-/**
- * @brief Returns the parameter count excluding command and key
- * 
- * @param void
- * @return int number of parameter
- */
+
 int cParser::getParamCount(void)
 {
 	if((NumberofParam - 2)<0)
