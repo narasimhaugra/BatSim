@@ -1,18 +1,15 @@
 /*
  * @author ugra narasimha
  * @date 12 Sep 2015
- * @see cparser.hpp
  */
 #include "../includes/cparser.hpp"
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
 
-
 cParser::cParser()
 {
 }
-
 
 bool cParser::getInput(void)
 {
@@ -31,7 +28,6 @@ bool cParser::getInput(void)
 		return false;
 	return true;
 }
-
 
 bool cParser::parseInput(const char** validCommands, const char** validKeys)
 {
@@ -73,14 +69,10 @@ char* cParser::getLastCommand(void)
 	return command;
 }
 
-
-
 char* cParser::getLastKey(void)
 {
 	return key;
 }
-
-
 
 double cParser::getParam(int index)
 {
